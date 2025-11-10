@@ -1,3 +1,24 @@
-from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .services.token_service import get_balance
 
-# Create your views here.
+@api_view(["GET"])
+def balance_view(request, address):
+    """
+    API view для получения баланса по адресу в сети.
+    Args:
+        request (rest_framework.request.Request): объект HTTP-запроса.
+        address (str): адрес кошелька для проверки баланса.
+    Returns:
+        rest_framework.response.Response:
+            - В случае успеха: словарь с данными баланса, например {"balance": 123.45}.
+            - В случае ошибки: словарь с ключом "error" и описанием ошибки, статус HTTP 400.
+
+    Raises:
+        Exception: любые ошибки, возникшие при вызове get_balance, обрабатываются и возвращаются в Response с кодом 400.
+    """
+    try:
+        data = get_balance(address)
+        return Response(data)
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
