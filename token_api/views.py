@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .services.token_service import get_balance
+from .services.token_service import get_balance, get_balances_batch
 
 @api_view(["GET"])
 def balance_view(request, address):
@@ -22,3 +22,19 @@ def balance_view(request, address):
         return Response(data)
     except Exception as e:
         return Response({"error": str(e)}, status=400)
+
+@api_view(["POST"])
+def balances_batch_view(request):
+    """
+    Принимает JSON:
+    {"addresses": ["0x...", "0x..."]}
+    Возвращает JSON:
+    {"balances": [0.01, 1000.0]}
+    """
+    addresses = request.data.get("addresses", [])
+    if not isinstance(addresses, list):
+        return Response({"error": "addresses должен быть списком"}, status=400)
+
+    balances = get_balances_batch(addresses)
+    return Response({"balances": balances})
+
