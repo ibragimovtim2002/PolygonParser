@@ -1,5 +1,6 @@
+import requests
 from web3 import Web3
-from config import TOKEN_ADDRESS
+from config import TOKEN_ADDRESS, POLYGONSCAN_API_KEY
 from .web3_client import w3
 from multicall import Call, Multicall
 
@@ -73,3 +74,33 @@ def get_balances_batch_update(addresses: list[str]) -> list[float]:
 
     balances = [result[Web3.to_checksum_address(addr)] / 10**decimals for addr in addresses]
     return balances
+
+def get_top_holders(top_n: int) -> list[tuple[str, float]]:
+    """
+    Получает топ N адресов по балансу токена через PolygonScan API.
+    Возвращает список кортежей: [(address, balance), ...]
+    Нужен платный доступ к PolygonScan API.
+    """
+    url = "https://api.polygonscan.com/api"
+    params = {
+        "module": "token",
+        "action": "topholders",
+        "contractaddress": TOKEN_ADDRESS,
+        "offset": top_n,
+        "apikey": POLYGONSCAN_API_KEY,
+        "chainid": 137
+    }
+
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    if data["status"] != "1":
+        raise ValueError(f"Ошибка PolygonScan API: {data.get('result')}")
+
+    holders = []
+    for item in data["result"]:
+        address = item["HolderAddress"]
+        balance = int(item["Balance"]) / 10**18
+        holders.append((address, balance))
+
+    return holders
