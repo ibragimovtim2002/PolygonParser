@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import balance_view, balances_batch_view, top_holders_view, top_holders_with_tx_view, token_info_view
+from .views import balance_view, balances_batch_view, top_holders_view, top_holders_with_tx_view, token_info_view, top_holders_user_token_view
 
 urlpatterns = [
     path("balance/<str:address>/", balance_view, name="balance"),
@@ -7,4 +7,5 @@ urlpatterns = [
     path("top/<int:top_n>/", top_holders_view, name="top_holders"),
     path("top_with_tx/<int:top_n>/", top_holders_with_tx_view, name="top_holders_with_tx"),
     path("getinfo/token/<str:token_address>/", token_info_view, name="token_info"),
+    path("getinfo/holders/<str:token_address>/<int:top_n>/", top_holders_user_token_view, name="top_holders"),
 ]
