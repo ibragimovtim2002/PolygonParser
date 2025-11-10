@@ -39,3 +39,13 @@ def get_balance(address: str) -> dict:
         "balance": balance / 10**decimals,
         "symbol": symbol,
     }
+
+def get_balances_batch(addresses: list[str]) -> list[float]:
+    """Возвращает список балансов токена для нескольких адресов"""
+    balances = []
+    for addr in addresses:
+        try:
+            balances.append(get_balance(addr)["balance"])
+        except Exception:
+            balances.append(None)  # если адрес некорректный
+    return balances
