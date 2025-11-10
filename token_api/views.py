@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .services.token_service import get_balance, get_balances_batch, get_top_holders_thegraph, get_top_with_last_transactions_thegraph
+from .services.token_balance import get_balance, get_balances_batch
+from .services.top_holders import get_top_holders_thegraph, get_top_with_last_transactions_thegraph
 
 @api_view(["GET"])
 def balance_view(request, address):
