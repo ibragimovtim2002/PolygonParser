@@ -30,7 +30,24 @@ ERC20_ABI = [
 contract = w3.eth.contract(address=TOKEN_ADDRESS, abi=ERC20_ABI)
 
 def get_balance(address: str) -> dict:
-    """Возвращает баланс токена для указанного адреса"""
+    """
+    Получает баланс указанного токена для конкретного адреса в сети Polygon.
+
+    Args:
+        address (str): Адрес кошелька пользователя (в формате 0x...).
+
+    Returns:
+        dict: Словарь с информацией о балансе токена:
+            {
+                "address": str,   # исходный адрес
+                "balance": float, # баланс токена с учетом десятичных знаков
+                "symbol": str     # символ токена (например, "USDC")
+            }
+
+    Raises:
+        ValueError: Если передан некорректный адрес.
+        Exception: При ошибках взаимодействия с контрактом (например, если RPC недоступен).
+    """
     addr = Web3.to_checksum_address(address)
     balance = contract.functions.balanceOf(addr).call()
     decimals = contract.functions.decimals().call()
@@ -42,7 +59,24 @@ def get_balance(address: str) -> dict:
     }
 
 def get_balances_batch(addresses: list[str]) -> list[float]:
-    """Возвращает список балансов токена для нескольких адресов"""
+    """
+    Получает балансы токена для нескольких адресов.
+
+    Для каждого адреса из списка выполняется запрос к смарт-контракту токена.
+    Если адрес некорректен или при запросе произошла ошибка, в список результатов
+    добавляется значение `None`.
+
+    Args:
+        addresses (list[str]): Список адресов кошельков в формате 0x...
+
+    Returns:
+        list[float | None]: Список балансов токена, где каждый элемент соответствует
+        адресу из входного списка. Если адрес недействителен или произошла ошибка,
+        на его месте будет `None`.
+
+    Raises:
+        Exception: Возможные ошибки при взаимодействии с RPC или контрактом токена.
+    """
     balances = []
     for addr in addresses:
         try:
