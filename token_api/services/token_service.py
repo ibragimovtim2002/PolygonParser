@@ -1,6 +1,7 @@
 from web3 import Web3
 from config import TOKEN_ADDRESS
 from .web3_client import w3
+from multicall import Call, Multicall
 
 ERC20_ABI = [
     {
@@ -48,4 +49,27 @@ def get_balances_batch(addresses: list[str]) -> list[float]:
             balances.append(get_balance(addr)["balance"])
         except Exception:
             balances.append(None)  # если адрес некорректный
+    return balances
+
+def get_balances_batch_update(addresses: list[str]) -> list[float]:
+    """
+    Оптимальный batch-вызов для нескольких адресов через Multicall.
+    Возвращает список балансов токена.
+    Не работает, выдается ошибка:
+        Cannot connect to host polygon-rpc.com:443 ssl:True
+        [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed:
+        unable to get local issuer certificate (_ssl.c:992)')] [0]
+    Доработка функции уменьшит количество обращений к RPC: вместо кошелек-запрос будет
+    все кошельки-запрос, требуется доработать, пока действует старая версия
+    """
+    decimals = contract.functions.decimals().call()
+    calls = []
+    for addr in addresses:
+        addr = Web3.to_checksum_address(addr)
+        calls.append(Call(TOKEN_ADDRESS, ['balanceOf(address)(uint256)', addr], [[addr, None]]))
+
+    multi = Multicall(calls=calls, _w3=w3)
+    result = multi()
+
+    balances = [result[Web3.to_checksum_address(addr)] / 10**decimals for addr in addresses]
     return balances
