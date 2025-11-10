@@ -87,6 +87,33 @@ def top_holders_with_tx_view(request, top_n: int):
 
 @api_view(["GET"])
 def token_info_view(request, token_address: str):
+    """
+    API endpoint для получения информации о токене ERC20 по его адресу.
+
+    Args:
+        request (rest_framework.request.Request): объект HTTP-запроса.
+        token_address (str): адрес токена ERC20 в сети Polygon.
+
+    Returns:
+        rest_framework.response.Response:
+            - В случае успеха: JSON с основной информацией о токене, например:
+              {
+                  "name": "Example Token",
+                  "symbol": "EXT",
+                  "totalSupply": 1000000.0,
+                  "decimals": 18
+              }
+            - В случае ошибки: JSON с ключом "error" и описанием ошибки.
+
+    Raises:
+        InvalidAddress: если указан некорректный адрес токена.
+        Exception: при любых других ошибках во время выполнения запроса.
+
+    HTTP Status Codes:
+        200 — успешный ответ.
+        400 — некорректный адрес токена.
+        500 — внутренняя ошибка сервера.
+    """
     try:
         info = get_token_info(token_address)
         return Response(info)
@@ -97,9 +124,37 @@ def token_info_view(request, token_address: str):
 
 @api_view(["GET"])
 def top_holders_user_token_view(request, token_address: str, top_n: int):
+    """
+    API endpoint для получения топа держателей пользовательского токена.
+
+    Args:
+        request (rest_framework.request.Request): объект HTTP-запроса.
+        token_address (str): адрес токена ERC20, для которого нужно получить список держателей.
+        top_n (int): количество адресов, которые нужно вернуть в топе.
+
+    Returns:
+        rest_framework.response.Response:
+            - В случае успеха: JSON со списком топовых держателей токена, например:
+              {
+                  "top_holders": [
+                      ["0x1234...", 5000.0],
+                      ["0xabcd...", 3200.5]
+                  ]
+              }
+            - В случае ошибки: JSON с ключом "error" и описанием ошибки.
+
+    Raises:
+        Exception: при ошибке запроса к API TheGraph или при обработке данных.
+
+    HTTP Status Codes:
+        200 — успешный ответ.
+        500 — внутренняя ошибка сервера.
+    """
     try:
         top = get_top_holders_user_token_thegraph(token_address, top_n)
         return Response({"top_holders": top})
+    except InvalidAddress:
+        return Response({"error": "Invalid token address"}, status=400)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
 
