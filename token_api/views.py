@@ -40,6 +40,19 @@ def balances_batch_view(request):
 
 @api_view(["GET"])
 def top_holders_view(request, top_n: int):
+    """
+    API endpoint для получения топ N держателей токена через The Graph API.
+
+    Args:
+        request (rest_framework.request.Request): объект HTTP-запроса.
+        top_n (int): количество топ-адресов для получения.
+
+    Returns:
+        rest_framework.response.Response:
+            - В случае успеха: JSON с ключом "top_holders", содержащим список кортежей (address, balance).
+              Пример: {"top_holders": [("0x123...", 100.0), ...]}
+            - В случае ошибки: JSON с ключом "error" и описанием ошибки, статус HTTP 400.
+    """
     try:
         top = get_top_holders_thegraph(top_n)
         return Response({"top_holders": top})
@@ -48,6 +61,21 @@ def top_holders_view(request, top_n: int):
 
 @api_view(["GET"])
 def top_holders_with_tx_view(request, top_n: int):
+    """
+    API endpoint для получения топ N держателей токена через The Graph API
+    вместе с датой последней транзакции.
+
+    Args:
+        request (rest_framework.request.Request): объект HTTP-запроса.
+        top_n (int): количество топ-адресов для получения.
+
+    Returns:
+        rest_framework.response.Response:
+            - В случае успеха: JSON с ключом "top_holders", содержащим список кортежей
+              (address, balance, last_tx_date).
+              Пример: {"top_holders": [("0x123...", 100.0, "2025-11-10T12:34:56"), ...]}
+            - В случае ошибки: JSON с ключом "error" и описанием ошибки, статус HTTP 400.
+    """
     try:
         top = get_top_with_last_transactions_thegraph(top_n)
         return Response({"top_holders": top})
