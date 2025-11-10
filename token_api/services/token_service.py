@@ -1,6 +1,6 @@
 import requests
 from web3 import Web3
-from config import TOKEN_ADDRESS, POLYGONSCAN_API_KEY
+from config import TOKEN_ADDRESS, POLYGONSCAN_API_KEY, THE_GRAPH_TOKEN_API_URL, THE_GRAPH_JWT, NETWORK
 from .web3_client import w3
 from multicall import Call, Multicall
 
@@ -103,4 +103,43 @@ def get_top_holders(top_n: int) -> list[tuple[str, float]]:
         balance = int(item["Balance"]) / 10**18
         holders.append((address, balance))
 
+    return holders
+
+def get_top_holders_thegraph(top_n: int) -> list[tuple[str, float]]:
+    """
+    Получает топ N держателей токена через The Graph API.
+
+    Args:
+        top_n (int): количество топ-адресов для получения.
+
+    Returns:
+        list[tuple[str, float]]: список кортежей (address, balance),
+        где `address` — адрес держателя, а `balance` — баланс токена.
+
+    Raises:
+        requests.RequestException: если запрос к API не удался.
+        ValueError: если данные API имеют неожиданный формат.
+
+    Notes:
+        - Использует THE_GRAPH_TOKEN_API_URL, NETWORK, TOKEN_ADDRESS и THE_GRAPH_JWT.
+        - Предполагается, что API возвращает JSON с ключом "data", содержащим список держателей.
+    """
+    url = f"{THE_GRAPH_TOKEN_API_URL}/v1/evm/holders"
+    params = {
+        "network": NETWORK,
+        "contract": TOKEN_ADDRESS,
+        "limit": top_n,
+        "page": 1
+    }
+    headers = {"Authorization": f"Bearer {THE_GRAPH_JWT}"}
+
+    resp = requests.get(url, headers=headers, params=params)
+    data = resp.json()
+
+    # предполагаем что в data есть список держателей с адресами и балансами
+    holders = []
+    for item in data.get("data", []):
+        address = item["address"]
+        balance = float(item["value"])
+        holders.append((address, balance))
     return holders
