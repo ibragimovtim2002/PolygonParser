@@ -143,3 +143,48 @@ def get_top_holders_thegraph(top_n: int) -> list[tuple[str, float]]:
         balance = float(item["value"])
         holders.append((address, balance))
     return holders
+
+def get_top_with_last_transactions_thegraph(top_n: int) -> list[tuple[str, float, str]]:
+    """
+    Получает топ N держателей токена через The Graph API вместе с датой последней транзакции.
+
+    Args:
+        top_n (int): количество топ-адресов для получения.
+
+    Returns:
+        list[tuple[str, float, str]]: список кортежей (address, balance, last_tx_date),
+        где:
+            - address (str) — адрес держателя,
+            - balance (float) — баланс токена,
+            - last_tx_date (str) — дата последней транзакции (может быть None).
+
+    Raises:
+        requests.RequestException: если запрос к API не удался.
+        ValueError: если данные API имеют неожиданный формат.
+
+    Notes:
+        - Использует THE_GRAPH_TOKEN_API_URL, NETWORK, TOKEN_ADDRESS и THE_GRAPH_JWT.
+        - Предполагается, что API возвращает JSON с ключом "data", содержащим список держателей.
+        - Дата последней транзакции извлекается из поля "last_update" API.
+    """
+
+    url = f"{THE_GRAPH_TOKEN_API_URL}/v1/evm/holders"
+    headers = {"Authorization": f"Bearer {THE_GRAPH_JWT}"}
+    params = {
+        "network": NETWORK,
+        "contract": TOKEN_ADDRESS,
+        "limit": top_n,
+        "page": 1
+    }
+
+    resp = requests.get(url, headers=headers, params=params)
+    data = resp.json()
+
+    holders = []
+    for item in data.get("data", []):
+        address = item["address"]
+        balance = float(item["value"])
+        last_tx_date = item.get("last_update")
+        holders.append((address, balance, last_tx_date))
+
+    return holders
