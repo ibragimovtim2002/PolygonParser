@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Polygon Token API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 40px;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .level {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px auto;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            width: 80%;
+        }
+        h2 {
+            color: #1e88e5;
+        }
+        code {
+            background: #eef;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<h1>Polygon Token API — демо</h1>
+
+<div class="level">
+    <h2>Уровень A</h2>
+    <p><b>Описание:</b> Получить баланс токена TBY у выбранного адреса.</p>
+    <p><b>Пример ввода:</b> <code>get_balance 0x51f1774249Fc2B0C2603542Ac6184Ae1d048351d</code></p>
+    <p><b>Пример ссылки:</b>
+        <a href="/api/balance/0x51f1774249Fc2B0C2603542Ac6184Ae1d048351d/">
+            /api/balance/0x51f1774249Fc2B0C2603542Ac6184Ae1d048351d/
+        </a>
+    </p>
+</div>
+
+<div class="level">
+    <h2>Уровень B</h2>
+    <p><b>Описание:</b> Получить баланс токена TBY нескольких адресов сразу.</p>
+    <p><b>Пример ввода:</b> <code>get_balance_batch ["0x51f177...", "0x4830AF..."]</code></p>
+    <p><b>Пример запроса:</b> POST <code>/api/balances/</code> с телом JSON:</p>
+    <pre>{
+  "addresses": [
+    "0x51f1774249Fc2B0C2603542Ac6184Ae1d048351d",
+    "0x4830AF4aB9cd9E381602aE50f71AE481a7727f7C"
+  ]
+}</pre>
+</div>
+
+<div class="level">
+    <h2>Уровень C</h2>
+    <p><b>Описание:</b> Получить топ адресов по балансам токена TBY.</p>
+    <p><b>Пример ввода:</b> <code>get_top 5</code></p>
+    <p><b>Пример ссылки:</b>
+        <a href="/api/top/5/">/api/top/5/</a>
+    </p>
+</div>
+
+<div class="level">
+    <h2>Уровень D</h2>
+    <p><b>Описание:</b> Получить топ адресов по балансам токена TBY с датами последних транзакций.</p>
+    <p><b>Пример ввода:</b> <code>top_with_tx 5</code></p>
+    <p><b>Пример ссылки:</b>
+        <a href="/api/top_with_tx/5/">/api/top_with_tx/5/</a>
+    </p>
+</div>
+
+<div class="level">
+    <h2>Уровень E</h2>
+    <p><b>Описание:</b> Произвольные операции с токеном (инфо, транзакции, холдеры и т.д.).</p>
+    <ul>
+        <li>
+            <b>Информация о токене:</b>
+            <a href="/api/getinfo/token/0x1a9b54a3075119f1546c52ca0940551a6ce5d2d0/">
+                /api/getinfo/token/0x1a9b54a3075119f1546c52ca0940551a6ce5d2d0/
+            </a>
+        </li>
+        <li>
+            <b>Топ холдеров токена:</b>
+            <a href="/api/getinfo/holders/0x1a9b54a3075119f1546c52ca0940551a6ce5d2d0/5/">
+                /api/getinfo/holders/0x1a9b54a3075119f1546c52ca0940551a6ce5d2d0/5/
+            </a>
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>
