@@ -6,7 +6,7 @@
 ---
 ## Технологии:
 - Python 3.11
-- Django 4.x
+- Django
 - Django REST Framework
 - Web3.py — для взаимодействия с сетью Polygon
 - The Graph Token API — для получения холдеров и транзакций
