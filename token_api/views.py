@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .services.token_service import get_balance, get_balances_batch, get_top_holders_thegraph
+from .services.token_service import get_balance, get_balances_batch, get_top_holders_thegraph, get_top_with_last_transactions_thegraph
 
 @api_view(["GET"])
 def balance_view(request, address):
@@ -42,6 +42,14 @@ def balances_batch_view(request):
 def top_holders_view(request, top_n: int):
     try:
         top = get_top_holders_thegraph(top_n)
+        return Response({"top_holders": top})
+    except Exception as e:
+        return Response({"error": str(e)}, status=400)
+
+@api_view(["GET"])
+def top_holders_with_tx_view(request, top_n: int):
+    try:
+        top = get_top_with_last_transactions_thegraph(top_n)
         return Response({"top_holders": top})
     except Exception as e:
         return Response({"error": str(e)}, status=400)
