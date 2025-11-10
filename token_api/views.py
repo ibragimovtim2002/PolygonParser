@@ -2,6 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .services.token_balance import get_balance, get_balances_batch
 from .services.top_holders import get_top_holders_thegraph, get_top_with_last_transactions_thegraph
+from .services.token_info import get_token_info
+from web3.exceptions import InvalidAddress
 
 @api_view(["GET"])
 def balance_view(request, address):
@@ -82,4 +84,14 @@ def top_holders_with_tx_view(request, top_n: int):
         return Response({"top_holders": top})
     except Exception as e:
         return Response({"error": str(e)}, status=400)
+
+@api_view(["GET"])
+def token_info_view(request, token_address: str):
+    try:
+        info = get_token_info(token_address)
+        return Response(info)
+    except InvalidAddress:
+        return Response({"error": "Invalid token address"}, status=400)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
 
